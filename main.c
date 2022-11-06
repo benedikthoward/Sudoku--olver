@@ -131,8 +131,17 @@ int main() {
 
     int solM2[28][82];
 
+    //fills with zeros
+    for (int r = 0; r < 28; r++) {
+        for (int c = 0; c < 82; c++) {
+            solM2[r][c]=0;
+
+        }
+    }
+
     int solM2Filled =0;
     printf("\n\n");
+    /*
     for(int i=0;i<unknowns;i++){
         if(doesNotContain(solMatrix[0][i],indexOfGuesses)==1){
             for(int r=0;r<28;r++){
@@ -145,6 +154,7 @@ int main() {
     for(int i=0;i<28;i++){
         solM2[i][solM2Filled]=solMatrix[i][unknowns];
     }
+    */
     printf("\n\n");
     for (int r = 0; r < 28; r++) {
         for (int c = 0; c < 82; c++) {
