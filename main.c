@@ -141,20 +141,21 @@ int main() {
 
     int solM2Filled =0;
     printf("\n\n");
-    /*
+    
     for(int i=0;i<unknowns;i++){
         if(doesNotContain(solMatrix[0][i],indexOfGuesses)==1){
             for(int r=0;r<28;r++){
-                solM2Filled++;
                 int a = solMatrix[r][i];
                 solM2[r][solM2Filled]=a;
             }
+            solM2Filled++;
         }
     }
+    
     for(int i=0;i<28;i++){
-        solM2[i][solM2Filled]=solMatrix[i][unknowns];
+        solM2[i][27]=solMatrix[i][unknowns];
     }
-    */
+    
     printf("\n\n");
     for (int r = 0; r < 28; r++) {
         for (int c = 0; c < 82; c++) {
