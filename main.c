@@ -182,6 +182,25 @@ int main() {
         }
         printf("\n");
     }
+    int reducable[27][28];
+    int knownandGuess[27][54];
+
+    for(int r=0;r<27;r++){
+        for(int c = 0; c<28;c++){
+            reducable[r][c]=solM2[r+1][c];
+            printf("%d|", reducable[r][c]);
+        }
+        printf("\n");
+    }
+
+    for(int r=0;r<27;r++){
+        for(int c = 28; c<82;c++){
+            knownandGuess[r][c-28]=solM2[r+1][c];
+            printf("%d|", knownandGuess[r][c]);
+        }
+        printf("\n");
+    }
+
     
 
 
