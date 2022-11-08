@@ -196,13 +196,9 @@ int main() {
     for(int r=0;r<27;r++){
         for(int c = 28; c<82;c++){
             knownandGuess[r][c-28]=solM2[r+1][c];
-            printf("%d|", knownandGuess[r][c]);
+            printf("%d|", knownandGuess[r][c-28]);
         }
         printf("\n");
     }
-
-    
-
-
 }
 
