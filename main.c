@@ -130,16 +130,8 @@ int main() {
 
 
     int solM2[28][82];
+    int solM2Filled = 0;
 
-    //fills with zeros
-    for (int r = 0; r < 28; r++) {
-        for (int c = 0; c < 82; c++) {
-            solM2[r][c]=0;
-
-        }
-    }
-
-    int solM2Filled =0;
     printf("\n\n");
     
     for(int i=0;i<unknowns;i++){
@@ -152,20 +144,45 @@ int main() {
         }
     }
     
+
     for(int i=0;i<28;i++){
         solM2[i][27]=solMatrix[i][unknowns];
     }
+
+    
+    for(int i=0;i<unknowns;i++){
+        if(doesNotContain(solMatrix[0][i],indexOfGuesses)==0){
+            for(int r=0;r<28;r++){
+                if(solMatrix[r][i]>0&&r>0){
+                    solM2[r][solM2Filled+1]=-1;
+                }else{
+                    solM2[r][solM2Filled+1]=solMatrix[r][i];
+                }
+            }
+            solM2Filled++;
+        }
+    }
+    for(int i=solM2Filled+1;i<82;i++){
+        for(int r=0;r<28;r++){
+                solM2[r][solM2Filled]=solMatrix[r][i];
+            
+        }
+        solM2Filled++;
+     }
+    
+
     
     printf("\n\n");
     for (int r = 0; r < 28; r++) {
         for (int c = 0; c < 82; c++) {
             printf("%d", solM2[r][c]);
-            if (c < 81) {
+            if (c < 82) {
                 printf("%s", "|");
             }
         }
         printf("\n");
     }
+    
 
 
 }
