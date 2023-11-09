@@ -90,7 +90,7 @@ int main() {
                         break;
             }
         }
-        free(&gen1);
+        free(gen1.offspring);
 
         if(solved == 0){
 
@@ -133,7 +133,7 @@ int main() {
                         break;
                 }
             }
-            free(&gen2);
+            free(gen2.offspring);
         }
 
     }

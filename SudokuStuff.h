@@ -119,7 +119,7 @@ int is_Valid(unsigned char possibilities[9][9][9],unsigned char sud[9][9]){
     return 1;
 }
 
- void decision_copy_array(int x, int y, int val, int sud[9][9], int into[9][9]) {
+ void decision_copy_array(int x, int y, int val, unsigned char sud[9][9], unsigned char into[9][9]) {
     
     // Copy the original array and change the specified value
     for (int i = 0; i < 9; ++i) {
