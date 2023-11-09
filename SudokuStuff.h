@@ -1,20 +1,4 @@
 
-void fill_possibilities(unsigned char possibilities[9][9][9], unsigned char filled[9][9]){
-    for(int i = 0; i<9;i++){
-        for(int j = 0;j<9;j++){
-            if(filled[i][j]==0){
-                for(int k = 1;k<10;k++){
-                    if(found_in_scope){
-                        possibilities[i][j][k]=0;
-                    }else{
-                        possibilities[i][j][k]=1;
-                    }
-                }
-            }
-        }    
-    }    
-}
-
 int found_in_scope(int i, int j, int looking_for, unsigned char filled[9][9]){
     for(int increm = 0; increm<9;increm++){
         if(filled[increm][j]==looking_for||filled[i][increm]==looking_for){
@@ -35,23 +19,39 @@ int found_in_scope(int i, int j, int looking_for, unsigned char filled[9][9]){
     return 0;
 }
 
+void fill_possibilities(unsigned char possibilities[9][9][9], unsigned char filled[9][9]){
+    for(int i = 0; i<9;i++){
+        for(int j = 0;j<9;j++){
+            if(filled[i][j]==0){
+                for(int k = 1;k<10;k++){
+                    if(found_in_scope(i,j,k,filled)){
+                        possibilities[i][j][k]=0;
+                    }else{
+                        possibilities[i][j][k]=1;
+                    }
+                }
+            }
+        }    
+    }    
+}
+
 int fill_conclusive(unsigned char possibilities[9][9][9], unsigned char filled[9][9]){
     int boolean = 0;
     int sum;
     int index;
-    for(int i = 0;i<9;i++){
-        for(int j = 0; j<9;j++){
-            if(filled[i][j]==0){
+    for(int i = 0; i < 9; i++){
+        for(int j = 0; j < 9; j++){
+            if(filled[i][j] == 0){
                 sum = 0;
-                for(int k =0 ;k<9;k++){
-                    sum+=possibilities[i][j][k];
-                    if(possibilities[i][j][k]==1){
-                        index = k+1;
+                for(int k = 0; k < 9; k++){
+                    sum += possibilities[i][j][k];
+                    if(possibilities[i][j][k] == 1){
+                        index = k + 1;
                     }
                 }
-                if(sum ==1){
-                    filled[i][j] = k;
-                    boolean =1;
+                if(sum == 1){
+                    filled[i][j] = index;  // Use index instead of k
+                    boolean = 1;
                 }
             }
         }    
@@ -61,7 +61,7 @@ int fill_conclusive(unsigned char possibilities[9][9][9], unsigned char filled[9
 
 //encodes a decision [index_Y, index_X, number_of_Outcomes, n1, n2, ...]
 int* decision_Array(unsigned char possibilities[9][9][9],unsigned char sud[9][9]) {
-    int min_outcomes = 2,147,483,647;
+    int min_outcomes = 2147483647;
     int sum;
     int x;
     int y;
@@ -83,12 +83,12 @@ int* decision_Array(unsigned char possibilities[9][9][9],unsigned char sud[9][9]
     // Dynamically allocate an array of 'size' integers
     int* array = (int*)malloc((3+min_outcomes) * sizeof(int));
 
-    array[0] = y
+    array[0] = y;
     array[1] = x;
     array[2] = min_outcomes;
     int preveous = 0;
-    for (int i = 3; i < size; ++i) {
-        for(int j = preveous;j<9;i++){
+    for (int i = 3; i < (3+min_outcomes); ++i) {
+        for(int j = preveous;j<9;j++){
             if(possibilities[y][x][j]==1){
                 array[i] = j+1;
                 preveous = j+1;
@@ -102,14 +102,15 @@ int* decision_Array(unsigned char possibilities[9][9][9],unsigned char sud[9][9]
 }
 
 int is_Valid(unsigned char possibilities[9][9][9],unsigned char sud[9][9]){
-    for(unsigned char i = 0;i<9;i++){
-        for(unsigned char j = 0; j<9;j++){
+    int sum;  // Declare sum
+    for(int i = 0; i < 9; i++){
+        for(int j = 0; j < 9; j++){
             sum = 0;
-            if(sud[i][j]==0){
-                for(unsigned char k =0 ;k<9;k++){
+            if(sud[i][j] == 0){
+                for(int k = 0; k < 9; k++){
                     sum += possibilities[i][j][k];
                 }
-                if(sum==0){
+                if(sum == 0){
                     return 0;
                 }
             }
@@ -130,6 +131,17 @@ int is_Valid(unsigned char possibilities[9][9][9],unsigned char sud[9][9]){
     into[x][y] = val;
 }
 
+int is_correct(unsigned char test[9][9]){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            if(test[i][j]==0){
+                return 0;
+            }
+        }    
+    }    
+    return 1;
+}
+
 int is_solved(unsigned char test[9][9], unsigned char final[9][9]){
     if(is_correct(test)){
         for(int i=0;i<9;i++){
@@ -140,15 +152,4 @@ int is_solved(unsigned char test[9][9], unsigned char final[9][9]){
         return 1;
     }
     return 0;
-}
-
-int is_correct(unsigned char test[9[9]]){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            if(test[i][j]==0){
-                return 0;
-            }
-        }    
-    }    
-    return 1;
 }

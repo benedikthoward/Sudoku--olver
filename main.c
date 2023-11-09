@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "SudokuStuff.h"
 
 typedef struct Generational_state{
@@ -30,7 +31,7 @@ int main() {
         fill_possibilities(possibilities,sud);
     }
 
-    int decision[] =  decision_Array(possibilities,sud);
+    int *decision =  decision_Array(possibilities,sud);
     int solved = 0;
     Generation gen1;
     gen1.offspring = (Generational_state *)malloc(decision[2] * sizeof(Generational_state));
@@ -43,7 +44,7 @@ int main() {
         }
         if(!is_Valid(gen1.offspring[i].possibilities,gen1.offspring[i].generational_field)){
             gen1.offspring[i].dead = 1;
-        }else if(is_solved()){
+        }else if(is_solved(gen1.offspring[i].generational_field,sud)){
             solved = 1;
         }
     }
@@ -64,7 +65,7 @@ int main() {
         int gen2_index = 0;
         for(int i = 0; i<gen1.generation_size; i++){
             if(gen1.offspring[i].dead==0){
-                int decision[] =  decision_Array(gen1.offspring[i].possibilities,gen1.offspring[i].generational_field);
+                int *decision =  decision_Array(gen1.offspring[i].possibilities,gen1.offspring[i].generational_field);
                 
                 for(int j = 0;i<decision[2]; j++){
 
@@ -89,7 +90,7 @@ int main() {
                         break;
             }
         }
-        free(gen1);
+        free(&gen1);
 
         if(solved == 0){
 
@@ -107,7 +108,7 @@ int main() {
             int gen1_index = 0;
             for(int i = 0; i<gen2.generation_size; i++){
                 if(gen2.offspring[i].dead==0){
-                    int decision[] =  decision_Array(gen2.offspring[i].possibilities,gen2.offspring[i].generational_field);
+                    int *decision =  decision_Array(gen2.offspring[i].possibilities,gen2.offspring[i].generational_field);
                     
                     for(int j = 0;i<decision[2]; j++){
 
@@ -132,7 +133,7 @@ int main() {
                         break;
                 }
             }
-            free(gen2);
+            free(&gen2);
         }
 
     }
