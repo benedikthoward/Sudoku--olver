@@ -23,8 +23,8 @@ void fill_possibilities(unsigned char possibilities[9][9][9], unsigned char fill
     for(int i = 0; i<9;i++){
         for(int j = 0;j<9;j++){
             if(filled[i][j]==0){
-                for(int k = 1;k<10;k++){
-                    if(found_in_scope(i,j,k,filled)){
+                for(int k = 0;k<9;k++){
+                    if(found_in_scope(i,j,k+1,filled)){
                         possibilities[i][j][k]=0;
                     }else{
                         possibilities[i][j][k]=1;
