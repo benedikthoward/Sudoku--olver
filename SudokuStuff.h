@@ -61,7 +61,7 @@ int fill_conclusive(unsigned char possibilities[9][9][9], unsigned char filled[9
 
 //encodes a decision [index_Y, index_X, number_of_Outcomes, n1, n2, ...]
 int* decision_Array(unsigned char possibilities[9][9][9],unsigned char sud[9][9]) {
-    int min_outcomes = 2147483647;
+    int min_outcomes = 10;
     int sum;
     int x;
     int y;
