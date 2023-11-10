@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "SudokuStuff.h"
 
 typedef struct Generational_state{
@@ -14,15 +15,39 @@ typedef struct Generation{
 }Generation;
 
 int main() {
-    unsigned char sud[9][9] =  {{0, 3, 0, 9, 2, 0, 4, 0, 1},
-                                {0, 1, 0, 3, 0, 4, 0, 0, 0},
-                                {4, 0, 7, 6, 0, 0, 0, 9, 3},
-                                {0, 0, 0, 0, 0, 0, 0, 6, 5},
-                                {1, 0, 0, 7, 9, 0, 3, 0, 4},
-                                {0, 7, 0, 0, 4, 0, 2, 1, 9},
-                                {7, 5, 0, 4, 6, 0, 0, 3, 0},
-                                {3, 0, 6, 0, 5, 1, 0, 4, 0},
-                                {0, 4, 0, 0, 7, 3, 0, 0, 0}};
+
+    clock_t start_time, end_time;
+    
+    // Record the start time
+    start_time = clock();
+    int generations = 0;
+
+    unsigned char sud[9][9] =  {
+        {0, 0, 0, 0, 8, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 4},
+        {0, 0, 7, 0, 0, 3, 0, 9, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 9},
+        {0, 0, 0, 2, 0, 0, 7, 0, 0},
+        {0, 0, 9, 0, 5, 0, 0, 0, 6},
+        {0, 0, 0, 0, 0, 6, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 2, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0}
+    };
+
+    printf("The problem:\n");
+    for(int i = 0;i<9;i++){
+        for(int j = 0; j<9;j++){
+            if(sud[i][j]==0){
+                printf("_  ");
+            }else{
+                printf("%d  ",sud[i][j]);
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+    printf("\n");
+    printf("The Solution:\n");
 
     unsigned char possibilities [9][9][9];
     //fill_conclusive returns if it made a change based on a field that is actually known 
@@ -48,10 +73,13 @@ int main() {
             solved = 1;
         }
     }
+    generations++;
+
     int next_gen_size;
     while(solved ==0){
 
         Generation gen2;
+        generations++;
         next_gen_size = 0;
         for(int i = 0; i<gen1.generation_size; i++){
             if(gen1.offspring[i].dead==0){
@@ -93,7 +121,7 @@ int main() {
         free(gen1.offspring);
 
         if(solved == 0){
-
+            generations++;
             Generation gen1;
             next_gen_size = 0;
             for(int i = 0; i<gen2.generation_size; i++){
@@ -143,5 +171,12 @@ int main() {
         }
         printf("\n");
     }
+
+    end_time = clock();
+    printf("\n");
+    printf("\n");
+    double elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+    printf("Time taken: %f seconds\n Generations Taken: %d\n", elapsed_time, generations);
+
     return 0;
 }
