@@ -1,3 +1,14 @@
+void print(unsigned char sud[9][9]){
+    printf("\n\n");
+    for(int i = 0;i<9;i++){
+        for(int j = 0; j<9;j++){
+            printf("%d  ",sud[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
 
 int found_in_scope(int i, int j, int looking_for, unsigned char filled[9][9]){
     for(int increm = 0; increm<9;increm++){
@@ -60,46 +71,37 @@ int fill_conclusive(unsigned char possibilities[9][9][9], unsigned char filled[9
 }
 
 //encodes a decision [index_Y, index_X, number_of_Outcomes, n1, n2, ...]
-int* decision_Array(unsigned char possibilities[9][9][9],unsigned char sud[9][9]) {
+void decision_Array(unsigned char possibilities[9][9][9], unsigned char sud[9][9], int array[12]) {
     int min_outcomes = 10;
     int sum;
-    int x;
-    int y;
-    for(unsigned char i = 0;i<9;i++){
-        for(unsigned char j = 0; j<9;j++){
+    int x = 0;  
+    int y = 0;  
+
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
             sum = 0;
-            if(sud[i][j]==0){
-                for(unsigned char k =0 ;k<9;k++){
+            if (sud[i][j] == 0) {
+                for (int k = 0; k < 9; k++) {
                     sum += possibilities[i][j][k];
                 }
-                if(sum<min_outcomes){
+                if(min_outcomes>sum){
+                    min_outcomes = sum;
                     x = j;
                     y = i;
-                    min_outcomes = sum;
                 }
             }
         }
     }
-    // Dynamically allocate an array of 'size' integers
-    int* array = (int*)malloc((3+min_outcomes) * sizeof(int));
+
 
     array[0] = y;
     array[1] = x;
     array[2] = min_outcomes;
-    int preveous = 0;
-    for (int i = 3; i < (3+min_outcomes); ++i) {
-        for(int j = preveous;j<9;j++){
-            if(possibilities[y][x][j]==1){
-                array[i] = j+1;
-                preveous = j+1;
-                break;
-            }
-        }
+    for (int j = 0; j < 9; j++) {
+        array[j + 3] = possibilities[y][x][j];
     }
-    
-    // Return the pointer to the array
-    return array;
 }
+
 
 int is_Valid(unsigned char possibilities[9][9][9],unsigned char sud[9][9]){
     int sum;  // Declare sum

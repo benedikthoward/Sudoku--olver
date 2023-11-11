@@ -21,6 +21,8 @@ int main() {
     // Record the start time
     start_time = clock();
     int generations = 0;
+    int arr_decision[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+    Generation* arr_Generations = (Generation*)malloc(64 * sizeof(Generation));
 
     unsigned char sud[9][9] =  {
         {0, 0, 0, 0, 8, 0, 0, 0, 0},
@@ -35,19 +37,7 @@ int main() {
     };
 
     printf("The problem:\n");
-    for(int i = 0;i<9;i++){
-        for(int j = 0; j<9;j++){
-            if(sud[i][j]==0){
-                printf("_  ");
-            }else{
-                printf("%d  ",sud[i][j]);
-            }
-        }
-        printf("\n");
-    }
-    printf("\n");
-    printf("\n");
-    printf("The Solution:\n");
+    print(sud);
 
     unsigned char possibilities [9][9][9];
     //fill_conclusive returns if it made a change based on a field that is actually known 
@@ -55,103 +45,75 @@ int main() {
     while(fill_conclusive(possibilities,sud)) {
         fill_possibilities(possibilities,sud);
     }
+    fill_possibilities(possibilities,sud);
 
-    int *decision =  decision_Array(possibilities,sud);
+    decision_Array(possibilities,sud,arr_decision);
     int solved = 0;
-    Generation gen1;
-    gen1.offspring = (Generational_state *)malloc(decision[2] * sizeof(Generational_state));
-    gen1.generation_size = decision[2];
-    for(int i = 0;i<gen1.generation_size; i++){
-        decision_copy_array(decision[1],decision[0],decision[i+3],sud, gen1.offspring[i].generational_field);
-        fill_possibilities(gen1.offspring[i].possibilities,gen1.offspring[i].generational_field);
-        while(fill_conclusive(gen1.offspring[i].possibilities,gen1.offspring[i].generational_field)) {
-            fill_possibilities(gen1.offspring[i].possibilities,gen1.offspring[i].generational_field);
-        }
-        if(!is_Valid(gen1.offspring[i].possibilities,gen1.offspring[i].generational_field)){
-            gen1.offspring[i].dead = 1;
-        }else if(is_solved(gen1.offspring[i].generational_field,sud)){
-            solved = 1;
+
+    arr_Generations[0].offspring = (Generational_state *)malloc(arr_decision[2] * sizeof(Generational_state));
+    arr_Generations[0].generation_size = arr_decision[2];
+    int gen_index = 0;
+    for(int i = 3;i<12; i++){
+        if(arr_decision[i]==1){
+            decision_copy_array(arr_decision[1],arr_decision[0],i-2,sud, arr_Generations[0].offspring[gen_index].generational_field);
+            fill_possibilities(arr_Generations[0].offspring[gen_index].possibilities,arr_Generations[0].offspring[gen_index].generational_field);
+            while(fill_conclusive(arr_Generations[0].offspring[gen_index].possibilities,arr_Generations[0].offspring[gen_index].generational_field)) {
+                fill_possibilities(arr_Generations[0].offspring[gen_index].possibilities,arr_Generations[0].offspring[gen_index].generational_field);
+            }
+            fill_possibilities(arr_Generations[0].offspring[gen_index].possibilities,arr_Generations[0].offspring[gen_index].generational_field);
+            if(!is_Valid(arr_Generations[0].offspring[gen_index].possibilities,arr_Generations[0].offspring[gen_index].generational_field)){
+                arr_Generations[0].offspring[gen_index].dead = 1;
+            }else if(is_solved(arr_Generations[0].offspring[gen_index].generational_field,sud)){
+                solved = 1;
+            }
+            gen_index++;
+            print(arr_Generations[0].offspring[gen_index].generational_field);
         }
     }
-    generations++;
+    printf("generation: 1, size: %d \n",arr_Generations[0].generation_size);
 
-    int next_gen_size;
-    while(solved ==0){
+    int next_gen_size = 0;
 
-        Generation gen2;
-        generations++;
-        next_gen_size = 0;
-        for(int i = 0; i<gen1.generation_size; i++){
-            if(gen1.offspring[i].dead==0){
-                next_gen_size += decision_Array(gen1.offspring[i].possibilities,gen1.offspring[i].generational_field)[2];
+    for(int i = 1;i<64;i++){
+
+        gen_index = 0;
+
+        for(int j = 0; j<arr_Generations[i-1].generation_size; j++){
+            if(arr_Generations[i-1].offspring[i].dead!=1){
+                decision_Array(arr_Generations[i-1].offspring[i].possibilities,arr_Generations[i-1].offspring[j].generational_field,arr_decision);
+                next_gen_size += arr_decision[2];
             }
         }
 
-        gen2.offspring = (Generational_state *)malloc(next_gen_size * sizeof(Generational_state));
-        gen2.generation_size = next_gen_size;
+        arr_Generations[i].offspring = (Generational_state *)malloc((next_gen_size+2) * sizeof(Generational_state));
+        arr_Generations[i].generation_size = next_gen_size;
 
-        int gen2_index = 0;
-        for(int i = 0; i<gen1.generation_size; i++){
-            if(gen1.offspring[i].dead==0){
-                int *decision =  decision_Array(gen1.offspring[i].possibilities,gen1.offspring[i].generational_field);
-                
-                for(int j = 0;i<decision[2]; j++){
 
-                    decision_copy_array(decision[1],decision[0],decision[i+3],gen1.offspring[i].generational_field, gen2.offspring[i].generational_field);
-                    fill_possibilities(gen2.offspring[gen2_index].possibilities,gen2.offspring[gen2_index].generational_field);
-                    while(fill_conclusive(gen2.offspring[gen2_index].possibilities,gen2.offspring[gen2_index].generational_field)) {
-                        fill_possibilities(gen2.offspring[gen2_index].possibilities,gen2.offspring[gen2_index].generational_field);
-                    }
-                    if(!is_Valid(gen2.offspring[gen2_index].possibilities,gen2.offspring[gen2_index].generational_field)){
-                        gen2.offspring[gen2_index].dead = 1;
-                    }else if(is_solved(gen2.offspring[gen2_index].generational_field,sud)){
-                        solved = 1;
-                        break;
-                    }
-                    gen2_index++;
+        for(int j = 0; j<arr_Generations[i-1].generation_size; j++){
+            if(arr_Generations[i-1].offspring[j].dead!=1){
+                decision_Array(arr_Generations[i-1].offspring[j].possibilities,arr_Generations[i-1].offspring[j].generational_field,arr_decision);
+                if(j==3){
+                    int a = 0;
                 }
-                if(solved==1){
-                        break;
-                }
-            }
-            if(solved==1){
-                        break;
-            }
-        }
-        free(gen1.offspring);
-
-        if(solved == 0){
-            generations++;
-            Generation gen1;
-            next_gen_size = 0;
-            for(int i = 0; i<gen2.generation_size; i++){
-                if(gen2.offspring[i].dead==0){
-                    next_gen_size += decision_Array(gen2.offspring[i].possibilities,gen2.offspring[i].generational_field)[2];
-                }
-            }
-
-            gen1.offspring = (Generational_state *)malloc(next_gen_size * sizeof(Generational_state));
-            gen1.generation_size = next_gen_size;
-
-            int gen1_index = 0;
-            for(int i = 0; i<gen2.generation_size; i++){
-                if(gen2.offspring[i].dead==0){
-                    int *decision =  decision_Array(gen2.offspring[i].possibilities,gen2.offspring[i].generational_field);
-                    
-                    for(int j = 0;i<decision[2]; j++){
-
-                        decision_copy_array(decision[1],decision[0],decision[i+3],gen2.offspring[i].generational_field, gen1.offspring[i].generational_field);
-                        fill_possibilities(gen1.offspring[gen1_index].possibilities,gen1.offspring[gen1_index].generational_field);
-                        while(fill_conclusive(gen1.offspring[gen1_index].possibilities,gen1.offspring[gen1_index].generational_field)) {
-                            fill_possibilities(gen1.offspring[gen1_index].possibilities,gen1.offspring[gen1_index].generational_field);
+                for(int k = 3;k<12; k++){
+                    if(arr_decision[k]==1){
+                        int x = arr_decision[1];
+                        int y = arr_decision[0];
+                        printf("\n(%d,%d) = %d -> %d\n",x,y,arr_Generations[i-1].offspring[j].generational_field[y][x], k-2);
+                        print(arr_Generations[i-1].offspring[j].generational_field);
+                        decision_copy_array(arr_decision[1],arr_decision[0],k-2,arr_Generations[i-1].offspring[j].generational_field, arr_Generations[i].offspring[gen_index].generational_field);
+                        fill_possibilities(arr_Generations[i].offspring[gen_index].possibilities,arr_Generations[i].offspring[gen_index].generational_field);
+                        while(fill_conclusive(arr_Generations[i].offspring[gen_index].possibilities,arr_Generations[i].offspring[gen_index].generational_field)) {
+                            fill_possibilities(arr_Generations[i].offspring[gen_index].possibilities,arr_Generations[i].offspring[gen_index].generational_field);
                         }
-                        if(!is_Valid(gen1.offspring[gen1_index].possibilities,gen1.offspring[gen1_index].generational_field)){
-                            gen1.offspring[gen1_index].dead = 1;
-                        }else if(is_solved(gen1.offspring[gen1_index].generational_field,sud)){
+                        fill_possibilities(arr_Generations[i].offspring[gen_index].possibilities,arr_Generations[i].offspring[gen_index].generational_field);
+                        if(!is_Valid(arr_Generations[i].offspring[gen_index].possibilities,arr_Generations[i].offspring[gen_index].generational_field)){
+                            arr_Generations[i].offspring[gen_index].dead = 1;
+                        }else if(is_solved(arr_Generations[i].offspring[gen_index].generational_field,sud)){
                             solved = 1;
                             break;
                         }
-                        gen1_index++;
+                        gen_index++;
                     }
                     if(solved==1){
                         break;
@@ -161,16 +123,20 @@ int main() {
                         break;
                 }
             }
-            free(gen2.offspring);
+            if(solved==1){
+                        break;
+            }
         }
+        if(solved==1){
+            break;
+        }
+        free(arr_Generations[i-1].offspring);
+        printf("generation: %d, size: %d \n",generations,arr_Generations[i].generation_size);
+        
+    }
 
-    }
-    for(int i = 0;i<9;i++){
-        for(int j = 0; j<9;j++){
-            printf("%d  ",sud[i][j]);
-        }
-        printf("\n");
-    }
+    printf("The Solution:\n");
+    print(sud);
 
     end_time = clock();
     printf("\n");
