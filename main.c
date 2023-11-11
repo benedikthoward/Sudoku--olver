@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "SudokuStuff.h"
 
 typedef struct Generational_state{
@@ -51,11 +52,13 @@ int main() {
     int solved = 0;
 
     arr_Generations[0].offspring = (Generational_state *)malloc(arr_decision[2] * sizeof(Generational_state));
+    memset(arr_Generations[0].offspring, 0, arr_decision[2] * sizeof(Generational_state));
     arr_Generations[0].generation_size = arr_decision[2];
     int gen_index = 0;
     for(int i = 3;i<12; i++){
         if(arr_decision[i]==1){
-            decision_copy_array(arr_decision[1],arr_decision[0],i-2,sud, arr_Generations[0].offspring[gen_index].generational_field);
+            copy_array(sud, arr_Generations[0].offspring[gen_index].generational_field);
+            arr_Generations[0].offspring[gen_index].generational_field[arr_decision[0]][arr_decision[1]] = i-2;
             fill_possibilities(arr_Generations[0].offspring[gen_index].possibilities,arr_Generations[0].offspring[gen_index].generational_field);
             while(fill_conclusive(arr_Generations[0].offspring[gen_index].possibilities,arr_Generations[0].offspring[gen_index].generational_field)) {
                 fill_possibilities(arr_Generations[0].offspring[gen_index].possibilities,arr_Generations[0].offspring[gen_index].generational_field);
@@ -67,52 +70,88 @@ int main() {
                 solved = 1;
             }
             gen_index++;
-            print(arr_Generations[0].offspring[gen_index].generational_field);
         }
     }
-    printf("generation: 1, size: %d \n",arr_Generations[0].generation_size);
 
     int next_gen_size = 0;
+    int count_dead = 0;
 
-    for(int i = 1;i<64;i++){
-
+    //this is the limit of generations for a valid sudoku game
+    for(int i = 1;i<30;i++){
+        //resets the index for this generation
+        generations = i+1;
         gen_index = 0;
+        next_gen_size = 0;
 
+        
+
+        //figures out how many new fields will be generated
         for(int j = 0; j<arr_Generations[i-1].generation_size; j++){
             if(arr_Generations[i-1].offspring[i].dead!=1){
                 decision_Array(arr_Generations[i-1].offspring[i].possibilities,arr_Generations[i-1].offspring[j].generational_field,arr_decision);
-                next_gen_size += arr_decision[2];
-            }
-        }
-
-        arr_Generations[i].offspring = (Generational_state *)malloc((next_gen_size+2) * sizeof(Generational_state));
-        arr_Generations[i].generation_size = next_gen_size;
-
-
-        for(int j = 0; j<arr_Generations[i-1].generation_size; j++){
-            if(arr_Generations[i-1].offspring[j].dead!=1){
-                decision_Array(arr_Generations[i-1].offspring[j].possibilities,arr_Generations[i-1].offspring[j].generational_field,arr_decision);
-                if(j==3){
-                    int a = 0;
-                }
                 for(int k = 3;k<12; k++){
                     if(arr_decision[k]==1){
+                        next_gen_size++;
+                    }
+                }
+            }
+        }
+        if(generations ==11){
+            int yes;
+        }
+
+        //allocates memmory to this generation
+        arr_Generations[i].offspring = (Generational_state *)malloc((next_gen_size) * sizeof(Generational_state));
+        if (arr_Generations[i].offspring == NULL) {
+            fprintf(stderr, "\nMemory allocation failed for offspring\n");
+            return 1;  // Exit if allocation fails
+        }
+        memset(arr_Generations[i].offspring, 0, next_gen_size * sizeof(Generational_state));
+        arr_Generations[i].generation_size = next_gen_size;
+
+        //indexes through the fields of the preveous generation
+        for(int j = 0; j<arr_Generations[i-1].generation_size; j++){
+            
+            //only carries the preeous generations offspring if it can still be solved
+            if(arr_Generations[i-1].offspring[j].dead!=1){
+
+                //generates the array that encodes the decison that has to be made [y,x,number of possibilites, n1,n2]
+                decision_Array(arr_Generations[i-1].offspring[j].possibilities,arr_Generations[i-1].offspring[j].generational_field,arr_decision);
+                
+                //parses the decision array by reading binary encoded possible values based on index
+                for(int k = 3;k<12; k++){
+                    //index-2 -> the value that is represented if 1 the position can have that value in the field
+                    if(arr_decision[k]==1){
+
+                        //indecies that will be filled for the next generation based on 
                         int x = arr_decision[1];
                         int y = arr_decision[0];
-                        printf("\n(%d,%d) = %d -> %d\n",x,y,arr_Generations[i-1].offspring[j].generational_field[y][x], k-2);
-                        print(arr_Generations[i-1].offspring[j].generational_field);
-                        decision_copy_array(arr_decision[1],arr_decision[0],k-2,arr_Generations[i-1].offspring[j].generational_field, arr_Generations[i].offspring[gen_index].generational_field);
+
+                        //prints the operation that is to be performed index goes from current val to new vale
+                        printf("\n(%d,%d) -> %d\n",x,y,(k-2));
+                        
+                        //copies the array from the preveous generation into the new generation with one option of the decision having been implemented
+                        copy_array(arr_Generations[i-1].offspring[j].generational_field, arr_Generations[i].offspring[gen_index].generational_field);
+                        arr_Generations[i].offspring[gen_index].generational_field[arr_decision[0]][arr_decision[1]] = k-2;
+                        
+                        //fills as much as is conclusive
                         fill_possibilities(arr_Generations[i].offspring[gen_index].possibilities,arr_Generations[i].offspring[gen_index].generational_field);
                         while(fill_conclusive(arr_Generations[i].offspring[gen_index].possibilities,arr_Generations[i].offspring[gen_index].generational_field)) {
                             fill_possibilities(arr_Generations[i].offspring[gen_index].possibilities,arr_Generations[i].offspring[gen_index].generational_field);
                         }
                         fill_possibilities(arr_Generations[i].offspring[gen_index].possibilities,arr_Generations[i].offspring[gen_index].generational_field);
+                        
+                        //checks for the new field still being solvable or being solved
                         if(!is_Valid(arr_Generations[i].offspring[gen_index].possibilities,arr_Generations[i].offspring[gen_index].generational_field)){
                             arr_Generations[i].offspring[gen_index].dead = 1;
+                            count_dead++;
                         }else if(is_solved(arr_Generations[i].offspring[gen_index].generational_field,sud)){
                             solved = 1;
                             break;
                         }
+                        print(arr_Generations[i].offspring[gen_index].generational_field);
+                        printf("\n ↑ %d",arr_Generations[i].offspring[gen_index].dead );
+                        //increments the generation index counter
                         gen_index++;
                     }
                     if(solved==1){
@@ -132,8 +171,12 @@ int main() {
         }
         free(arr_Generations[i-1].offspring);
         printf("generation: %d, size: %d \n",generations,arr_Generations[i].generation_size);
-        
+        for(int j = 0; j<next_gen_size;j++){
+            print(arr_Generations[i].offspring[j].generational_field);
+            printf("\n ↑ %d",arr_Generations[i].offspring[j].dead );
+        }
     }
+    free(arr_Generations);
 
     printf("The Solution:\n");
     print(sud);

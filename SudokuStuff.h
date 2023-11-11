@@ -121,7 +121,7 @@ int is_Valid(unsigned char possibilities[9][9][9],unsigned char sud[9][9]){
     return 1;
 }
 
- void decision_copy_array(int x, int y, int val, unsigned char sud[9][9], unsigned char into[9][9]) {
+ void copy_array(unsigned char sud[9][9], unsigned char into[9][9]) {
     
     // Copy the original array and change the specified value
     for (int i = 0; i < 9; ++i) {
@@ -129,8 +129,6 @@ int is_Valid(unsigned char possibilities[9][9][9],unsigned char sud[9][9]){
             into[i][j] = sud[i][j];
         }
     }
-
-    into[x][y] = val;
 }
 
 int is_correct(unsigned char test[9][9]){
