@@ -23,18 +23,18 @@ int main() {
     start_time = clock();
     int generations = 0;
     int arr_decision[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
-    Generation* arr_Generations = (Generation*)malloc(64 * sizeof(Generation));
+    Generation* arr_Generations = (Generation*)calloc(64 , sizeof(Generation));
 
     unsigned char sud[9][9] =  {
-        {0, 0, 0, 0, 8, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 4},
-        {0, 0, 7, 0, 0, 3, 0, 9, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 9},
-        {0, 0, 0, 2, 0, 0, 7, 0, 0},
-        {0, 0, 9, 0, 5, 0, 0, 0, 6},
-        {0, 0, 0, 0, 0, 6, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 2, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0}
+        {3, 5, 4, 0, 1, 0, 0, 7, 9},
+        {0, 0, 0, 3, 5, 0, 0, 4, 0},
+        {0, 0, 8, 6, 0, 4, 0, 5, 3},
+        {7, 0, 0, 0, 0, 2, 3, 9, 0},
+        {0, 0, 0, 5, 0, 7, 0, 6, 0},
+        {0, 0, 0, 0, 0, 6, 7, 0, 0},
+        {0, 0, 0, 8, 0, 3, 0, 0, 0},
+        {5, 0, 0, 0, 0, 0, 8, 2, 6},
+        {0, 0, 0, 0, 0, 0, 9, 0, 4}
     };
 
     printf("The problem:\n");
@@ -51,7 +51,7 @@ int main() {
     decision_Array(possibilities,sud,arr_decision);
     int solved = 0;
 
-    arr_Generations[0].offspring = (Generational_state *)malloc(arr_decision[2] * sizeof(Generational_state));
+    arr_Generations[0].offspring = (Generational_state *)calloc(arr_decision[2] , sizeof(Generational_state));
     memset(arr_Generations[0].offspring, 0, arr_decision[2] * sizeof(Generational_state));
     arr_Generations[0].generation_size = arr_decision[2];
     int gen_index = 0;
@@ -77,7 +77,7 @@ int main() {
     int count_dead = 0;
 
     //this is the limit of generations for a valid sudoku game
-    for(int i = 1;i<30;i++){
+    for(int i = 1;i<64;i++){
         //resets the index for this generation
         generations = i+1;
         gen_index = 0;
@@ -101,7 +101,7 @@ int main() {
         }
 
         //allocates memmory to this generation
-        arr_Generations[i].offspring = (Generational_state *)malloc((next_gen_size) * sizeof(Generational_state));
+        arr_Generations[i].offspring = (Generational_state *)calloc((next_gen_size) , sizeof(Generational_state));
         if (arr_Generations[i].offspring == NULL) {
             fprintf(stderr, "\nMemory allocation failed for offspring\n");
             return 1;  // Exit if allocation fails
@@ -128,7 +128,7 @@ int main() {
                         int y = arr_decision[0];
 
                         //prints the operation that is to be performed index goes from current val to new vale
-                        printf("\n(%d,%d) -> %d\n",x,y,(k-2));
+                        //printf("\n(%d,%d) -> %d\n",x,y,(k-2));
                         
                         //copies the array from the preveous generation into the new generation with one option of the decision having been implemented
                         copy_array(arr_Generations[i-1].offspring[j].generational_field, arr_Generations[i].offspring[gen_index].generational_field);
@@ -149,8 +149,8 @@ int main() {
                             solved = 1;
                             break;
                         }
-                        print(arr_Generations[i].offspring[gen_index].generational_field);
-                        printf("\n ↑ %d",arr_Generations[i].offspring[gen_index].dead );
+                        //print(arr_Generations[i].offspring[gen_index].generational_field);
+                        //printf("\n ↑ %d\n",arr_Generations[i].offspring[gen_index].dead );
                         //increments the generation index counter
                         gen_index++;
                     }
@@ -170,11 +170,9 @@ int main() {
             break;
         }
         free(arr_Generations[i-1].offspring);
+        arr_Generations[i-1].offspring = NULL;
         printf("generation: %d, size: %d \n",generations,arr_Generations[i].generation_size);
-        for(int j = 0; j<next_gen_size;j++){
-            print(arr_Generations[i].offspring[j].generational_field);
-            printf("\n ↑ %d",arr_Generations[i].offspring[j].dead );
-        }
+        
     }
     free(arr_Generations);
 
