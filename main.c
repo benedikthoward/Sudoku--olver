@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include "SudokuStuff.h"
+#include "SudokuStuff.c"
 
 typedef struct Generational_state{
     unsigned char generational_field[9][9];
