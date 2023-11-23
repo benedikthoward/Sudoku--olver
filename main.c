@@ -130,7 +130,9 @@ int main() {
                 }
             }
         }
-        
+        for(int j=0;j<previous_generation_size;j++){
+            free(previous_generation[j]);
+        }
         free(previous_generation);
         previous_generation = current_generation;
         previous_generation_size = current_generation_size;
